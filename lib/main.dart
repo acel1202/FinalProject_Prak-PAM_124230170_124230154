@@ -6,12 +6,14 @@ void main() {
   runApp(const MyApp());
 }
 
+// MENGUBAH: Menjadikan MainScreen sebagai widget utama aplikasi
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+
       debugShowCheckedModeBanner: false,
       title: 'Jet&Stay',
       theme: ThemeData(
