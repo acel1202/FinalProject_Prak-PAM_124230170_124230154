@@ -121,9 +121,7 @@ class _MainScreenState extends State<MainScreen> {
     required Color primaryColor,
   }) {
     final bool isSelected = index == _selectedIndex;
-    final Color iconColor = isSelected ? Colors.white : Colors.grey.shade600;
-    final Color textColor = isSelected ? primaryColor : Colors.grey.shade600;
-    
+
     // Memberikan efek background di item yang dipilih (seperti gambar referensi)
     return GestureDetector(
       onTap: () => _onItemTapped(index),
