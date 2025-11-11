@@ -42,7 +42,7 @@ class _HomePageState extends State<HomePage> {
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           children: [
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
 
             /// TITLE
             Row(
@@ -59,13 +59,17 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
 
-            const SizedBox(height: 10),
+            const SizedBox(height: 14),
 
-            /// AUTO SLIDER
-            SizedBox(
-              height: 220,
+            /// ============= BIGGER SLIDER (350px) =============
+            Container(
+              height: 350,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(22),
+                color: Colors.grey[300],
+              ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(22),
                 child: Stack(
                   children: [
                     PageView.builder(
@@ -79,21 +83,29 @@ class _HomePageState extends State<HomePage> {
                               sliderImages[index],
                               fit: BoxFit.cover,
                             ),
-                            Container(
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Colors.black.withOpacity(0.5),
-                                    Colors.transparent,
-                                  ],
-                                  begin: Alignment.bottomCenter,
-                                  end: Alignment.topCenter,
+
+                            /// DARK FADE BOTTOM
+                            Align(
+                              alignment: Alignment.bottomCenter,
+                              child: Container(
+                                height: 150,
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.bottomCenter,
+                                    end: Alignment.topCenter,
+                                    colors: [
+                                      Colors.black.withOpacity(0.65),
+                                      Colors.black.withOpacity(0.0),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
+
+                            /// TEXT
                             Positioned(
-                              bottom: 20,
                               left: 20,
+                              bottom: 22,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: const [
@@ -101,7 +113,7 @@ class _HomePageState extends State<HomePage> {
                                     "Pyramid",
                                     style: TextStyle(
                                       color: Colors.white,
-                                      fontSize: 18,
+                                      fontSize: 24,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -121,10 +133,10 @@ class _HomePageState extends State<HomePage> {
                       },
                     ),
 
-                    /// BUTTON SELANJUTNYA →
+                    /// NEXT BUTTON
                     Positioned(
-                      top: 12,
-                      right: 12,
+                      top: 16,
+                      right: 16,
                       child: ElevatedButton(
                         onPressed: () {
                           final nextPage =
@@ -141,7 +153,7 @@ class _HomePageState extends State<HomePage> {
                             borderRadius: BorderRadius.circular(20),
                           ),
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
+                            horizontal: 14,
                             vertical: 8,
                           ),
                           elevation: 0,
@@ -153,7 +165,7 @@ class _HomePageState extends State<HomePage> {
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 12,
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                             SizedBox(width: 4),
@@ -171,9 +183,9 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
 
-            const SizedBox(height: 25),
+            const SizedBox(height: 28),
 
-            /// LAYANAN TITLE
+            /// LAYANAN
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: const [
@@ -188,9 +200,8 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
 
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
 
-            /// LAYANAN GRID - RESPONSIVE, TANPA GAP
             Column(
               children: [
                 Row(
@@ -235,7 +246,7 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
 
-            const SizedBox(height: 40),
+            const SizedBox(height: 60),
           ],
         ),
       ),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'pages/dashboard/home_page.dart';
-import 'pages/screen/main_screen.dart'; // Import MainScreen
+import 'pages/screen/main_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,12 +14,13 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Jet&Stay',
       theme: ThemeData(
-        // Menggunakan seed color orange sesuai permintaan
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
+        fontFamily: 'Inter',
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFFFFB45F), // dari palette yang kamu kirim
+        ),
         useMaterial3: true,
       ),
-      // MENGUBAH: Menggunakan MainScreen sebagai halaman utama
-      home: const MainScreen(),
+      home: const MainScreen(), // ✅ HomePage masuk melalui MainScreen
     );
   }
 }
