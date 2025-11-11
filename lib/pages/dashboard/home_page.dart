@@ -18,6 +18,21 @@ class _HomePageState extends State<HomePage> {
     "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
   ];
 
+  // MATERIAL 3 COLOR PALETTE based on primary = #FFB45F
+  final Color primary = const Color(0xFFFFB45F);
+  final Color onPrimary = const Color(0xFF4F2800);
+
+  final Color secondary = const Color(0xFF755A43);
+  final Color tertiary = const Color(0xFF5D6236);
+
+  // BACKGROUND & SURFACE from Material Theme Builder
+  final Color background = const Color(0xFFFEF7F3); // Light neutral
+  final Color surface = const Color(0xFFFFF8F3); // Soft surface
+  final Color surfaceVariant = const Color(0xFFF2E0D0); // Card surface
+
+  final Color outline = const Color(0xFF857469);
+  final Color neutral = const Color(0xFF76736F);
+
   @override
   void initState() {
     super.initState();
@@ -37,36 +52,36 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: background, // ✅ gunakan palette background
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           children: [
             const SizedBox(height: 12),
 
-            /// TITLE
             Row(
               children: [
                 const Text(
                   "Discover Places",
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: "Inter",
+                  ),
                 ),
                 const Spacer(),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.search, size: 26),
-                ),
+                Icon(Icons.search, size: 26, color: neutral),
               ],
             ),
 
             const SizedBox(height: 14),
 
-            /// ============= BIGGER SLIDER (350px) =============
+            /// ==================== SLIDER ====================
             Container(
               height: 350,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(22),
-                color: Colors.grey[300],
+                color: surface, // ✅ slider container mengikuti surface
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(22),
@@ -84,45 +99,42 @@ class _HomePageState extends State<HomePage> {
                               fit: BoxFit.cover,
                             ),
 
-                            /// DARK FADE BOTTOM
-                            Align(
-                              alignment: Alignment.bottomCenter,
-                              child: Container(
-                                height: 150,
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.bottomCenter,
-                                    end: Alignment.topCenter,
-                                    colors: [
-                                      Colors.black.withOpacity(0.65),
-                                      Colors.black.withOpacity(0.0),
-                                    ],
-                                  ),
+                            Container(
+                              height: 150,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.bottomCenter,
+                                  end: Alignment.topCenter,
+                                  colors: [
+                                    Colors.black.withOpacity(0.65),
+                                    Colors.black.withOpacity(0.0),
+                                  ],
                                 ),
                               ),
                             ),
 
-                            /// TEXT
                             Positioned(
                               left: 20,
                               bottom: 22,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: const [
-                                  Text(
+                                children: [
+                                  const Text(
                                     "Pyramid",
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 24,
                                       fontWeight: FontWeight.bold,
+                                      fontFamily: "Inter",
                                     ),
                                   ),
-                                  SizedBox(height: 6),
+                                  const SizedBox(height: 6),
                                   Text(
                                     "Egyptian Pyramids",
                                     style: TextStyle(
-                                      color: Colors.white,
+                                      color: Colors.white.withOpacity(0.8),
                                       fontSize: 14,
+                                      fontFamily: "Inter",
                                     ),
                                   ),
                                 ],
@@ -133,22 +145,21 @@ class _HomePageState extends State<HomePage> {
                       },
                     ),
 
-                    /// NEXT BUTTON
                     Positioned(
                       top: 16,
                       right: 16,
                       child: ElevatedButton(
                         onPressed: () {
-                          final nextPage =
-                              (_currentPage + 1) % sliderImages.length;
+                          final next = (_currentPage + 1) % sliderImages.length;
                           _pageController.animateToPage(
-                            nextPage,
+                            next,
                             duration: const Duration(milliseconds: 700),
                             curve: Curves.easeInOut,
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white.withOpacity(0.85),
+                          backgroundColor: surface.withOpacity(0.85),
+                          foregroundColor: Colors.black,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                           ),
@@ -158,22 +169,18 @@ class _HomePageState extends State<HomePage> {
                           ),
                           elevation: 0,
                         ),
-                        child: Row(
-                          children: const [
+                        child: const Row(
+                          children: [
                             Text(
                               "Selanjutnya",
                               style: TextStyle(
-                                color: Colors.black,
                                 fontSize: 12,
+                                fontFamily: "Inter",
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
                             SizedBox(width: 4),
-                            Icon(
-                              Icons.arrow_forward,
-                              size: 14,
-                              color: Colors.black,
-                            ),
+                            Icon(Icons.arrow_forward, size: 14),
                           ],
                         ),
                       ),
@@ -185,17 +192,25 @@ class _HomePageState extends State<HomePage> {
 
             const SizedBox(height: 28),
 
-            /// LAYANAN
+            /// ==================== LAYANAN ====================
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
-                Text(
+              children: [
+                const Text(
                   "Layanan",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: "Inter",
+                  ),
                 ),
                 Text(
                   "Lihat semua",
-                  style: TextStyle(fontSize: 14, color: Colors.orange),
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontFamily: "Inter",
+                    color: primary,
+                  ),
                 ),
               ],
             ),
@@ -210,7 +225,7 @@ class _HomePageState extends State<HomePage> {
                       child: layananCard(
                         title: "Booking Hotel",
                         icon: Icons.hotel,
-                        gradient: [Colors.orange, Colors.deepOrange],
+                        gradient: [primary, const Color(0xFFFFA23D)],
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -218,7 +233,10 @@ class _HomePageState extends State<HomePage> {
                       child: layananCard(
                         title: "Booking Pesawat",
                         icon: Icons.flight_takeoff,
-                        gradient: [Colors.blue, Colors.lightBlueAccent],
+                        gradient: [
+                          const Color(0xFF7CB7FF),
+                          const Color(0xFF4A9BFF),
+                        ],
                       ),
                     ),
                   ],
@@ -230,7 +248,7 @@ class _HomePageState extends State<HomePage> {
                       child: layananCard(
                         title: "Riwayat Hotel",
                         icon: Icons.history,
-                        gradient: [Colors.purple, Colors.deepPurpleAccent],
+                        gradient: [secondary, const Color(0xFF5E442F)],
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -238,7 +256,7 @@ class _HomePageState extends State<HomePage> {
                       child: layananCard(
                         title: "Riwayat Tiket",
                         icon: Icons.receipt_long,
-                        gradient: [Colors.green, Colors.lightGreen],
+                        gradient: [tertiary, const Color(0xFF4A4F2B)],
                       ),
                     ),
                   ],
@@ -267,6 +285,13 @@ class _HomePageState extends State<HomePage> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: outline.withOpacity(0.15),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -278,6 +303,7 @@ class _HomePageState extends State<HomePage> {
             title,
             style: const TextStyle(
               color: Colors.white,
+              fontFamily: "Inter",
               fontSize: 15,
               fontWeight: FontWeight.bold,
             ),
