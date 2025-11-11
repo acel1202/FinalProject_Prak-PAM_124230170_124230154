@@ -66,55 +66,107 @@ class _HomePageState extends State<HomePage> {
               height: 220,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20),
-                child: PageView.builder(
-                  controller: _pageController,
-                  itemCount: sliderImages.length,
-                  itemBuilder: (context, index) {
-                    return Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        Image.network(sliderImages[index], fit: BoxFit.cover),
-                        Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Colors.black.withOpacity(0.5),
-                                Colors.transparent,
-                              ],
-                              begin: Alignment.bottomCenter,
-                              end: Alignment.topCenter,
+                child: Stack(
+                  children: [
+                    PageView.builder(
+                      controller: _pageController,
+                      itemCount: sliderImages.length,
+                      itemBuilder: (context, index) {
+                        return Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            Image.network(
+                              sliderImages[index],
+                              fit: BoxFit.cover,
                             ),
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 20,
-                          left: 20,
-                          right: 20,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                              Text(
-                                "Pyramid",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
+                            Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Colors.black.withOpacity(0.5),
+                                    Colors.transparent,
+                                  ],
+                                  begin: Alignment.bottomCenter,
+                                  end: Alignment.topCenter,
                                 ),
                               ),
-                              SizedBox(height: 6),
-                              Text(
-                                "Egyptian Pyramids",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                ),
+                            ),
+                            Positioned(
+                              bottom: 20,
+                              left: 20,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: const [
+                                  Text(
+                                    "Pyramid",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  SizedBox(height: 6),
+                                  Text(
+                                    "Egyptian Pyramids",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+
+                    /// BUTTON SELANJUTNYA →
+                    Positioned(
+                      top: 12,
+                      right: 12,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          final nextPage =
+                              (_currentPage + 1) % sliderImages.length;
+                          _pageController.animateToPage(
+                            nextPage,
+                            duration: const Duration(milliseconds: 700),
+                            curve: Curves.easeInOut,
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white.withOpacity(0.85),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
                           ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          elevation: 0,
                         ),
-                      ],
-                    );
-                  },
+                        child: Row(
+                          children: const [
+                            Text(
+                              "Selanjutnya",
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            SizedBox(width: 4),
+                            Icon(
+                              Icons.arrow_forward,
+                              size: 14,
+                              color: Colors.black,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -136,39 +188,49 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
 
-            const SizedBox(height: 18),
+            const SizedBox(height: 10),
 
-            /// LAYANAN OPTIONS
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            /// LAYANAN GRID - RESPONSIVE, TANPA GAP
+            Column(
               children: [
-                layananCard(
-                  title: "Booking Hotel",
-                  icon: Icons.hotel,
-                  gradient: [Colors.orange, Colors.deepOrange],
+                Row(
+                  children: [
+                    Expanded(
+                      child: layananCard(
+                        title: "Booking Hotel",
+                        icon: Icons.hotel,
+                        gradient: [Colors.orange, Colors.deepOrange],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: layananCard(
+                        title: "Booking Pesawat",
+                        icon: Icons.flight_takeoff,
+                        gradient: [Colors.blue, Colors.lightBlueAccent],
+                      ),
+                    ),
+                  ],
                 ),
-                layananCard(
-                  title: "Booking Pesawat",
-                  icon: Icons.flight_takeoff,
-                  gradient: [Colors.blue, Colors.lightBlueAccent],
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 18),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                layananCard(
-                  title: "Riwayat Hotel",
-                  icon: Icons.history,
-                  gradient: [Colors.purple, Colors.deepPurpleAccent],
-                ),
-                layananCard(
-                  title: "Riwayat Tiket",
-                  icon: Icons.receipt_long,
-                  gradient: [Colors.green, Colors.lightGreen],
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: layananCard(
+                        title: "Riwayat Hotel",
+                        icon: Icons.history,
+                        gradient: [Colors.purple, Colors.deepPurpleAccent],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: layananCard(
+                        title: "Riwayat Tiket",
+                        icon: Icons.receipt_long,
+                        gradient: [Colors.green, Colors.lightGreen],
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -186,7 +248,6 @@ class _HomePageState extends State<HomePage> {
     required List<Color> gradient,
   }) {
     return Container(
-      width: 160,
       height: 120,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(18),
