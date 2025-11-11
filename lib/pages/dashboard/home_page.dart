@@ -42,7 +42,7 @@ class _HomePageState extends State<HomePage> {
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           children: [
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
 
             /// TITLE
             Row(
@@ -59,69 +59,133 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
 
-            const SizedBox(height: 10),
+            const SizedBox(height: 14),
 
-            /// AUTO SLIDER
-            SizedBox(
-              height: 220,
+            /// ============= BIGGER SLIDER (350px) =============
+            Container(
+              height: 350,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(22),
+                color: Colors.grey[300],
+              ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: PageView.builder(
-                  controller: _pageController,
-                  itemCount: sliderImages.length,
-                  itemBuilder: (context, index) {
-                    return Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        Image.network(sliderImages[index], fit: BoxFit.cover),
-                        Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Colors.black.withOpacity(0.5),
-                                Colors.transparent,
-                              ],
-                              begin: Alignment.bottomCenter,
-                              end: Alignment.topCenter,
+                borderRadius: BorderRadius.circular(22),
+                child: Stack(
+                  children: [
+                    PageView.builder(
+                      controller: _pageController,
+                      itemCount: sliderImages.length,
+                      itemBuilder: (context, index) {
+                        return Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            Image.network(
+                              sliderImages[index],
+                              fit: BoxFit.cover,
                             ),
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 20,
-                          left: 20,
-                          right: 20,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                              Text(
-                                "Pyramid",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
+
+                            /// DARK FADE BOTTOM
+                            Align(
+                              alignment: Alignment.bottomCenter,
+                              child: Container(
+                                height: 150,
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.bottomCenter,
+                                    end: Alignment.topCenter,
+                                    colors: [
+                                      Colors.black.withOpacity(0.65),
+                                      Colors.black.withOpacity(0.0),
+                                    ],
+                                  ),
                                 ),
                               ),
-                              SizedBox(height: 6),
-                              Text(
-                                "Egyptian Pyramids",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                ),
+                            ),
+
+                            /// TEXT
+                            Positioned(
+                              left: 20,
+                              bottom: 22,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: const [
+                                  Text(
+                                    "Pyramid",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  SizedBox(height: 6),
+                                  Text(
+                                    "Egyptian Pyramids",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+
+                    /// NEXT BUTTON
+                    Positioned(
+                      top: 16,
+                      right: 16,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          final nextPage =
+                              (_currentPage + 1) % sliderImages.length;
+                          _pageController.animateToPage(
+                            nextPage,
+                            duration: const Duration(milliseconds: 700),
+                            curve: Curves.easeInOut,
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white.withOpacity(0.85),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
                           ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 8,
+                          ),
+                          elevation: 0,
                         ),
-                      ],
-                    );
-                  },
+                        child: Row(
+                          children: const [
+                            Text(
+                              "Selanjutnya",
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            SizedBox(width: 4),
+                            Icon(
+                              Icons.arrow_forward,
+                              size: 14,
+                              color: Colors.black,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
 
-            const SizedBox(height: 25),
+            const SizedBox(height: 28),
 
-            /// LAYANAN TITLE
+            /// LAYANAN
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: const [
@@ -136,44 +200,53 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
 
-            const SizedBox(height: 18),
+            const SizedBox(height: 12),
 
-            /// LAYANAN OPTIONS
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Column(
               children: [
-                layananCard(
-                  title: "Booking Hotel",
-                  icon: Icons.hotel,
-                  gradient: [Colors.orange, Colors.deepOrange],
+                Row(
+                  children: [
+                    Expanded(
+                      child: layananCard(
+                        title: "Booking Hotel",
+                        icon: Icons.hotel,
+                        gradient: [Colors.orange, Colors.deepOrange],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: layananCard(
+                        title: "Booking Pesawat",
+                        icon: Icons.flight_takeoff,
+                        gradient: [Colors.blue, Colors.lightBlueAccent],
+                      ),
+                    ),
+                  ],
                 ),
-                layananCard(
-                  title: "Booking Pesawat",
-                  icon: Icons.flight_takeoff,
-                  gradient: [Colors.blue, Colors.lightBlueAccent],
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: layananCard(
+                        title: "Riwayat Hotel",
+                        icon: Icons.history,
+                        gradient: [Colors.purple, Colors.deepPurpleAccent],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: layananCard(
+                        title: "Riwayat Tiket",
+                        icon: Icons.receipt_long,
+                        gradient: [Colors.green, Colors.lightGreen],
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
 
-            const SizedBox(height: 18),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                layananCard(
-                  title: "Riwayat Hotel",
-                  icon: Icons.history,
-                  gradient: [Colors.purple, Colors.deepPurpleAccent],
-                ),
-                layananCard(
-                  title: "Riwayat Tiket",
-                  icon: Icons.receipt_long,
-                  gradient: [Colors.green, Colors.lightGreen],
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 40),
+            const SizedBox(height: 60),
           ],
         ),
       ),
@@ -186,7 +259,6 @@ class _HomePageState extends State<HomePage> {
     required List<Color> gradient,
   }) {
     return Container(
-      width: 160,
       height: 120,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(18),

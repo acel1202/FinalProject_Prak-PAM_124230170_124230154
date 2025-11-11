@@ -57,7 +57,6 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     // Menggunakan skema warna yang sesuai dengan Colors.orange
     final Color primaryColor = Theme.of(context).colorScheme.primary;
-    final Color onPrimaryColor = Theme.of(context).colorScheme.onPrimary;
 
     return Scaffold(
       extendBody: true, // Penting untuk navbar mengambang
