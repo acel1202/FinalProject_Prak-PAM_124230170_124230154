@@ -1,5 +1,8 @@
+// lib/pages/dashboard/home_page.dart
+
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:finalproject_124230170_124230154/pages/booking/search_hotel.dart'; // Import halaman pencarian hotel
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -9,6 +12,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  // ... (Variabel dan initState tetap sama) ...
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
@@ -32,7 +36,7 @@ class _HomePageState extends State<HomePage> {
 
   final Color outline = const Color(0xFF857469);
   final Color neutral = const Color(0xFF76736F);
-
+  
   @override
   void initState() {
     super.initState();
@@ -48,7 +52,7 @@ class _HomePageState extends State<HomePage> {
       }
     });
   }
-
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -226,6 +230,15 @@ class _HomePageState extends State<HomePage> {
                         title: "Booking Hotel",
                         icon: Icons.hotel,
                         gradient: [primary, const Color(0xFFFFA23D)],
+                        // ✨ Tambahkan onTap untuk navigasi
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const BookingHotelPage(),
+                            ),
+                          );
+                        },
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -237,6 +250,9 @@ class _HomePageState extends State<HomePage> {
                           const Color(0xFF7CB7FF),
                           const Color(0xFF4A9BFF),
                         ],
+                        onTap: () {
+                          // TODO: Implementasi navigasi ke Booking Pesawat
+                        },
                       ),
                     ),
                   ],
@@ -249,6 +265,9 @@ class _HomePageState extends State<HomePage> {
                         title: "Riwayat Hotel",
                         icon: Icons.history,
                         gradient: [secondary, const Color(0xFF5E442F)],
+                        onTap: () {
+                          // TODO: Implementasi navigasi ke Riwayat Hotel
+                        },
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -257,6 +276,9 @@ class _HomePageState extends State<HomePage> {
                         title: "Riwayat Tiket",
                         icon: Icons.receipt_long,
                         gradient: [tertiary, const Color(0xFF4A4F2B)],
+                        onTap: () {
+                          // TODO: Implementasi navigasi ke Riwayat Tiket
+                        },
                       ),
                     ),
                   ],
@@ -275,40 +297,44 @@ class _HomePageState extends State<HomePage> {
     required String title,
     required IconData icon,
     required List<Color> gradient,
+    required VoidCallback onTap, // ✨ Tambahkan onTap
   }) {
-    return Container(
-      height: 120,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(18),
-        gradient: LinearGradient(
-          colors: gradient,
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: outline.withOpacity(0.15),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+    return GestureDetector( // ✨ Bungkus dengan GestureDetector
+      onTap: onTap,
+      child: Container(
+        height: 120,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(18),
+          gradient: LinearGradient(
+            colors: gradient,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-        ],
-      ),
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, color: Colors.white, size: 32),
-          const Spacer(),
-          Text(
-            title,
-            style: const TextStyle(
-              color: Colors.white,
-              fontFamily: "Inter",
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
+          boxShadow: [
+            BoxShadow(
+              color: outline.withOpacity(0.15),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
             ),
-          ),
-        ],
+          ],
+        ),
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(icon, color: Colors.white, size: 32),
+            const Spacer(),
+            Text(
+              title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontFamily: "Inter",
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

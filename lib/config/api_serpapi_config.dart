@@ -1,7 +1,7 @@
-// Ganti nama file ini dari api_amadeus_config.dart menjadi api_serpapi_config.dart
-// Hapus atau abaikan file api_amadeus_config.dart yang tidak terpakai
+// API Key Anda dari prompt
+const String SERPAPI_KEY = '487049b3cf0bd22c673d42909f853b46ae0ba3d6e5636a026c30988aeb1dbdcd';
 
-class ApiSerpApiConfig {
-  static const String apiKey = '487049b3cf0bd22c673d42909f853b46ae0ba3d6e5636a026c30988aeb1dbdcd'; // API Key yang Anda berikan
-  static const String baseUrl = 'https://serpapi.com/search';
-}
+// Base URL untuk Google Hotels API
+const String SERPAPI_HOTELS_BASE_URL = 'https://serpapi.com/search?engine=google_hotels';
+
+// Catatan: Karena API ini memerlukan parameter 'q' (query), kita akan membangun URL-nya di Service.
