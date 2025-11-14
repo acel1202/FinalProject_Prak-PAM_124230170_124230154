@@ -2,7 +2,8 @@
 
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:finalproject_124230170_124230154/pages/booking/search_hotel.dart'; // Import halaman pencarian hotel
+import 'package:finalproject_124230170_124230154/pages/booking/hotel/search_hotel.dart';
+import 'package:finalproject_124230170_124230154/pages/booking/pesawat/search_flight.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -12,7 +13,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // ... (Variabel dan initState tetap sama) ...
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
@@ -22,21 +22,19 @@ class _HomePageState extends State<HomePage> {
     "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
   ];
 
-  // MATERIAL 3 COLOR PALETTE based on primary = #FFB45F
   final Color primary = const Color(0xFFFFB45F);
   final Color onPrimary = const Color(0xFF4F2800);
 
   final Color secondary = const Color(0xFF755A43);
   final Color tertiary = const Color(0xFF5D6236);
 
-  // BACKGROUND & SURFACE from Material Theme Builder
-  final Color background = const Color(0xFFFEF7F3); // Light neutral
-  final Color surface = const Color(0xFFFFF8F3); // Soft surface
-  final Color surfaceVariant = const Color(0xFFF2E0D0); // Card surface
+  final Color background = const Color(0xFFFEF7F3);
+  final Color surface = const Color(0xFFFFF8F3);
+  final Color surfaceVariant = const Color(0xFFF2E0D0);
 
   final Color outline = const Color(0xFF857469);
   final Color neutral = const Color(0xFF76736F);
-  
+
   @override
   void initState() {
     super.initState();
@@ -52,11 +50,11 @@ class _HomePageState extends State<HomePage> {
       }
     });
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: background, // ✅ gunakan palette background
+      backgroundColor: background,
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -80,12 +78,12 @@ class _HomePageState extends State<HomePage> {
 
             const SizedBox(height: 14),
 
-            /// ==================== SLIDER ====================
+            // ==================== SLIDER ====================
             Container(
               height: 350,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(22),
-                color: surface, // ✅ slider container mengikuti surface
+                color: surface,
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(22),
@@ -102,7 +100,6 @@ class _HomePageState extends State<HomePage> {
                               sliderImages[index],
                               fit: BoxFit.cover,
                             ),
-
                             Container(
                               height: 150,
                               decoration: BoxDecoration(
@@ -116,7 +113,6 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               ),
                             ),
-
                             Positioned(
                               left: 20,
                               bottom: 22,
@@ -196,7 +192,7 @@ class _HomePageState extends State<HomePage> {
 
             const SizedBox(height: 28),
 
-            /// ==================== LAYANAN ====================
+            // ==================== LAYANAN ====================
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -230,7 +226,6 @@ class _HomePageState extends State<HomePage> {
                         title: "Booking Hotel",
                         icon: Icons.hotel,
                         gradient: [primary, const Color(0xFFFFA23D)],
-                        // ✨ Tambahkan onTap untuk navigasi
                         onTap: () {
                           Navigator.push(
                             context,
@@ -251,7 +246,13 @@ class _HomePageState extends State<HomePage> {
                           const Color(0xFF4A9BFF),
                         ],
                         onTap: () {
-                          // TODO: Implementasi navigasi ke Booking Pesawat
+                          // ❤️ Navigasi ke SearchFlightPage
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SearchFlightPage(),
+                            ),
+                          );
                         },
                       ),
                     ),
@@ -265,9 +266,7 @@ class _HomePageState extends State<HomePage> {
                         title: "Riwayat Hotel",
                         icon: Icons.history,
                         gradient: [secondary, const Color(0xFF5E442F)],
-                        onTap: () {
-                          // TODO: Implementasi navigasi ke Riwayat Hotel
-                        },
+                        onTap: () {},
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -276,9 +275,7 @@ class _HomePageState extends State<HomePage> {
                         title: "Riwayat Tiket",
                         icon: Icons.receipt_long,
                         gradient: [tertiary, const Color(0xFF4A4F2B)],
-                        onTap: () {
-                          // TODO: Implementasi navigasi ke Riwayat Tiket
-                        },
+                        onTap: () {},
                       ),
                     ),
                   ],
@@ -297,9 +294,9 @@ class _HomePageState extends State<HomePage> {
     required String title,
     required IconData icon,
     required List<Color> gradient,
-    required VoidCallback onTap, // ✨ Tambahkan onTap
+    required VoidCallback onTap,
   }) {
-    return GestureDetector( // ✨ Bungkus dengan GestureDetector
+    return GestureDetector(
       onTap: onTap,
       child: Container(
         height: 120,
