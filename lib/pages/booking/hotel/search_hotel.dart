@@ -2,8 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../manager/hive_hotel_manager.dart'; 
-import '../../service/api_serpapi_service.dart'; 
+import '../../../manager/hive_hotel_manager.dart';
+import '../../../service/api_serpapi_service.dart';
 
 // Placeholder untuk Halaman Detail Hotel (Tidak perlu diubah)
 class HotelDetailPage extends StatelessWidget {
@@ -53,8 +53,8 @@ class _BookingHotelPageState extends State<BookingHotelPage> {
 
   void _loadInitialHotels() async {
     // Menggunakan Bali untuk Discovery karena hasil gambarnya terbukti lebih baik
-    const initialDestination = 'Bali'; 
-    
+    const initialDestination = 'Bali';
+
     setState(() {
       _isLoading = true;
       _message = 'Memuat hotel-hotel populer...';
@@ -270,7 +270,7 @@ class _BookingHotelPageState extends State<BookingHotelPage> {
                         fit: BoxFit.cover,
                         errorBuilder: (c, e, s) => _buildImageFallback(),
                       )
-                    : _buildImageFallback(), 
+                    : _buildImageFallback(),
 
                 // Gradien Overlay untuk teks
                 Container(
