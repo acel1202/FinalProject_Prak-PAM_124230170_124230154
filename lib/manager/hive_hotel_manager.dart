@@ -1,19 +1,19 @@
 // lib/manager/hive_hotel_manager.dart
 
-// Hapus atau abaikan baris yang berhubungan dengan Hive/build_runner jika tidak dipakai
-// import 'package:hive/hive.dart';
-// part 'hive_hotel_manager.g.dart'; 
-// Asumsi: Kita hanya mendefinisikan model data di sini.
+// Placeholder manager agar import di file service tidak error
+class HiveHotelManager {
+  // Placeholder manager
+}
 
-// Model yang digunakan untuk menampung hasil data dari SerpApi
+// Model Data Hotel yang disesuaikan untuk respons SerpAPI
 class HotelResultModel {
   final String hotelId;
   final String name;
   final double rating;
-  final String priceText; // Harga dalam bentuk String
-  final String imageUrl;
+  final String priceText; 
+  final String imageUrl; // <-- INI YANG KRUSIAL
   final String address;
-  final String? description; // Tambahkan deskripsi untuk tampilan awal
+  final String? description;
 
   HotelResultModel({
     required this.hotelId,
@@ -24,41 +24,38 @@ class HotelResultModel {
     required this.address,
     this.description,
   });
-}
 
-// Model Hive (Jika Anda benar-benar menggunakan Hive untuk Riwayat)
-/*
-@HiveType(typeId: 0)
-class BookingModel extends HiveObject {
-  @HiveField(0)
-  final String bookingId; 
-  
-  @HiveField(1)
-  final String hotelName;
-  
-  @HiveField(2)
-  final String checkInDate;
-  
-  @HiveField(3)
-  final String checkOutDate;
-  
-  @HiveField(4)
-  final int numberOfGuests;
-  
-  @HiveField(5)
-  final double totalPrice;
-  
-  @HiveField(6)
-  final String imageUrl; 
+  // Factory Constructor untuk mengurai JSON dari SerpAPI
+  factory HotelResultModel.fromJson(Map<String, dynamic> json) {
+    
+    // ✨ PERBAIKAN: Cari kunci gambar yang paling mungkin, yaitu 'thumbnail' atau 'main_image'.
+    final String image = json['thumbnail'] 
+        ?? json['main_image'] 
+        ?? json['image'] 
+        ?? ''; // Default ke string kosong jika tidak ada gambar
 
-  BookingModel({
-    required this.bookingId,
-    required this.hotelName,
-    required this.checkInDate,
-    required this.checkOutDate,
-    required this.numberOfGuests,
-    required this.totalPrice,
-    required this.imageUrl,
-  });
+    // Ambil rating dan pastikan diubah ke double
+    final double overallRating = (json['overall_rating'] is num) 
+        ? json['overall_rating'].toDouble() 
+        : 0.0;
+        
+    // Ambil harga. Karena Anda mengaturnya kosong di kode lama, kita pertahankan priceText
+    final String price = json['price']?.toString() 
+        ?? json['rates']?[0]?['price']?.toString() 
+        ?? '';
+        
+    final String priceText = price.isNotEmpty 
+        ? 'Rp ${price}' 
+        : 'Cek Harga';
+
+    return HotelResultModel(
+      hotelId: json['hotel_id']?.toString() ?? 'N/A',
+      name: json['name'] ?? 'Nama Hotel Tidak Diketahui',
+      rating: overallRating,
+      priceText: priceText,
+      imageUrl: image, // Menggunakan variabel 'image' yang sudah dicari
+      address: json['address'] ?? 'Alamat tidak tersedia',
+      description: json['description'],
+    );
+  }
 }
-*/
