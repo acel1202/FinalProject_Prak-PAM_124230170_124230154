@@ -1,61 +1,105 @@
 // lib/manager/hive_hotel_manager.dart
 
-// Placeholder manager agar import di file service tidak error
+import 'dart:math';
+
+// Placeholder manager (Menghilangkan dependensi database)
 class HiveHotelManager {
-  // Placeholder manager
+  // Dibiarkan kosong
 }
 
-// Model Data Hotel yang disesuaikan untuk respons SerpAPI
+// Model Hotel yang disalin dari HOTEL_MODEL.DART lama Anda
 class HotelResultModel {
-  final String hotelId;
   final String name;
-  final double rating;
-  final String priceText; 
-  final String imageUrl; // <-- INI YANG KRUSIAL
   final String address;
-  final String? description;
+  final String imageUrl;
+  final double rating;
+  final String priceText;
+  final String hotelId; // Tambahan field untuk menyesuaikan constructor baru
+  // Field description DIHILANGKAN agar tidak menyebabkan error parsing.
 
   HotelResultModel({
-    required this.hotelId,
     required this.name,
+    required this.address,
+    required this.imageUrl,
     required this.rating,
     required this.priceText,
-    required this.imageUrl,
-    required this.address,
-    this.description,
+    required this.hotelId, 
   });
 
-  // Factory Constructor untuk mengurai JSON dari SerpAPI
   factory HotelResultModel.fromJson(Map<String, dynamic> json) {
+    final random = Random();
     
-    // ✨ PERBAIKAN: Cari kunci gambar yang paling mungkin, yaitu 'thumbnail' atau 'main_image'.
-    final String image = json['thumbnail'] 
-        ?? json['main_image'] 
-        ?? json['image'] 
-        ?? ''; // Default ke string kosong jika tidak ada gambar
+    // 1. Parsing Nama & ID
+    final name = (json['name'] ?? json['title'] ?? 'Unknown').toString();
+    final hotelId = json['hotel_id']?.toString() ?? 'N/A';
 
-    // Ambil rating dan pastikan diubah ke double
-    final double overallRating = (json['overall_rating'] is num) 
-        ? json['overall_rating'].toDouble() 
-        : 0.0;
-        
-    // Ambil harga. Karena Anda mengaturnya kosong di kode lama, kita pertahankan priceText
-    final String price = json['price']?.toString() 
-        ?? json['rates']?[0]?['price']?.toString() 
-        ?? '';
-        
-    final String priceText = price.isNotEmpty 
-        ? 'Rp ${price}' 
-        : 'Cek Harga';
+    // 2. Parsing Alamat
+    final address =
+        (json['address'] ??
+                json['vicinity'] ??
+                json['location'] ??
+                json['formatted_address'] ??
+                'Alamat tidak tersedia')
+            .toString();
+
+    // 3. Parsing Rating
+    final ratingRaw = json['overall_rating'] ?? json['rating'] ?? 0;
+    final rating = ratingRaw is num ? ratingRaw.toDouble() : 0.0;
+
+    // 4. Parsing Gambar (Logika persis dari proyek lama)
+    final imageUrl =
+        (json['thumbnail'] ??
+                (json['images'] is List && json['images'].isNotEmpty
+                    ? json['images'][0]['thumbnail'] ??
+                          json['images'][0]['image']
+                    : null) ??
+                'https://via.placeholder.com/300x200') // Placeholder yang sama
+            .toString();
+
+    // 5. Logika Harga (Menggunakan logika dummy harga dari proyek lama)
+    double priceUsd = 0.0;
+    String priceText = 'Cek Harga';
+    
+    // (Logika parsing harga dari proyek lama Anda, disalin sepenuhnya)
+    if (json['rate_per_night'] is Map) {
+      final rate = json['rate_per_night']['lowest'] ?? json['rate_per_night']['average'];
+      if (rate is Map && rate['extracted_value'] != null) {
+        priceUsd = (rate['extracted_value'] as num).toDouble();
+        priceText = rate['price'] ?? 'USD ${priceUsd.toStringAsFixed(2)}';
+      }
+    } else if (json['prices'] is List && (json['prices'] as List).isNotEmpty) {
+      final first = json['prices'].first as Map;
+      final rateStr = (first['rate'] ?? '').toString();
+      if (rateStr.isNotEmpty) {
+        final match = RegExp(r'([0-9]+(?:\.[0-9]+)?)').firstMatch(rateStr);
+        if (match != null) priceUsd = double.parse(match.group(1)!);
+        priceText = rateStr;
+      }
+    }
+    
+    // Logika Dummy Harga
+    if (priceUsd == 0.0) {
+      double minPrice, maxPrice;
+      if (rating >= 4.8) {
+        minPrice = 300; maxPrice = 600;
+      } else if (rating >= 4.5) {
+        minPrice = 150; maxPrice = 300;
+      } else if (rating >= 4.0) {
+        minPrice = 80; maxPrice = 150;
+      } else {
+        minPrice = 50; maxPrice = 80;
+      }
+      priceUsd = minPrice + random.nextDouble() * (maxPrice - minPrice);
+      priceText = "USD ${priceUsd.toStringAsFixed(2)}";
+    }
 
     return HotelResultModel(
-      hotelId: json['hotel_id']?.toString() ?? 'N/A',
-      name: json['name'] ?? 'Nama Hotel Tidak Diketahui',
-      rating: overallRating,
+      hotelId: hotelId,
+      name: name,
+      address: address,
+      imageUrl: imageUrl,
+      rating: rating,
       priceText: priceText,
-      imageUrl: image, // Menggunakan variabel 'image' yang sudah dicari
-      address: json['address'] ?? 'Alamat tidak tersedia',
-      description: json['description'],
     );
   }
 }

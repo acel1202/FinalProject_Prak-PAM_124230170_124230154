@@ -1,11 +1,69 @@
-// lib/pages/booking/search_hotel.dart
+// lib/pages/booking/hotel/search_hotel.dart
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../../manager/hive_hotel_manager.dart';
-import '../../../service/api_serpapi_service.dart';
+import '../../../manager/hive_hotel_manager.dart'; // Import Model
+import '../../../service/api_serpapi_service.dart'; // Import Service
 
-// Placeholder untuk Halaman Detail Hotel (Tidak perlu diubah)
+// Widget Khusus untuk Menampilkan Gambar Jaringan (Image.network)
+class HotelImageWidget extends StatelessWidget {
+  final HotelResultModel hotel;
+  const HotelImageWidget({super.key, required this.hotel});
+
+  Widget _buildImageFallback() {
+    return Container(
+      color: Colors.grey.shade400,
+      child: const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.hotel_outlined, color: Colors.white, size: 60),
+            SizedBox(height: 8),
+            Text(
+              "Gambar Tidak Tersedia",
+              style: TextStyle(color: Colors.white, fontSize: 14),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bool showNetworkImage =
+        hotel.imageUrl.isNotEmpty &&
+        hotel.imageUrl != 'https://via.placeholder.com/300x200';
+
+    if (showNetworkImage) {
+      return Image.network(
+        hotel.imageUrl,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          debugPrint('Gagal memuat gambar: $error');
+          return _buildImageFallback();
+        },
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) {
+            return child;
+          }
+          return Center(
+            child: CircularProgressIndicator(
+              value: loadingProgress.expectedTotalBytes != null
+                  ? loadingProgress.cumulativeBytesLoaded /
+                        loadingProgress.expectedTotalBytes!
+                  : null,
+            ),
+          );
+        },
+      );
+    } else {
+      return _buildImageFallback();
+    }
+  }
+}
+
+// Halaman Detail Hotel
 class HotelDetailPage extends StatelessWidget {
   final HotelResultModel hotel;
   final String checkInDate;
@@ -22,11 +80,112 @@ class HotelDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(hotel.name)),
-      body: Center(child: Text('Detail untuk ${hotel.name}')),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Gambar Hotel
+              Container(
+                height: 250,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 5,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: HotelImageWidget(hotel: hotel),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                hotel.name,
+                style: const TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  const Icon(Icons.star, color: Colors.amber, size: 20),
+                  const SizedBox(width: 4),
+                  // Rating
+                  Text(
+                    '${hotel.rating.toStringAsFixed(1)} Rating',
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                hotel.address,
+                style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+              ),
+              const Divider(height: 32),
+              Text(
+                'Deskripsi:',
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              // Deskripsi: Menggunakan alamat sebagai deskripsi jika Model lama tidak memiliki field deskripsi yang jelas
+              Text(hotel.address, style: const TextStyle(fontSize: 16)),
+              const SizedBox(height: 24),
+              Text(
+                'Harga per Malam: ${hotel.priceText}',
+                style: const TextStyle(
+                  fontSize: 18,
+                  color: Colors.green,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Memproses Booking untuk ${hotel.name}'),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 40,
+                      vertical: 15,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: const Text(
+                    'Booking Sekarang',
+                    style: TextStyle(fontSize: 18),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
 
+// Halaman Utama Pencarian Hotel (BookingHotelPage)
 class BookingHotelPage extends StatefulWidget {
   const BookingHotelPage({super.key});
 
@@ -38,8 +197,8 @@ class _BookingHotelPageState extends State<BookingHotelPage> {
   final HotelApiService _apiService = HotelApiService();
   final TextEditingController _destinationController = TextEditingController();
 
-  DateTime _checkInDate = DateTime.now().add(const Duration(days: 1));
-  DateTime _checkOutDate = DateTime.now().add(const Duration(days: 2));
+  final DateTime _checkInDate = DateTime.now().add(const Duration(days: 1));
+  final DateTime _checkOutDate = DateTime.now().add(const Duration(days: 2));
 
   List<HotelResultModel> _hotels = [];
   bool _isLoading = false;
@@ -52,7 +211,6 @@ class _BookingHotelPageState extends State<BookingHotelPage> {
   }
 
   void _loadInitialHotels() async {
-    // Menggunakan Bali untuk Discovery karena hasil gambarnya terbukti lebih baik
     const initialDestination = 'Bali';
 
     setState(() {
@@ -61,25 +219,7 @@ class _BookingHotelPageState extends State<BookingHotelPage> {
       _destinationController.text = initialDestination;
     });
 
-    final checkInStr = DateFormat('yyyy-MM-dd').format(_checkInDate);
-    final checkOutStr = DateFormat('yyyy-MM-dd').format(_checkOutDate);
-
-    final results = await _apiService.fetchHotels(
-      destination: initialDestination,
-      checkInDate: checkInStr,
-      checkOutDate: checkOutStr,
-    );
-
-    setState(() {
-      _hotels = results;
-      _isLoading = false;
-      if (_hotels.isEmpty) {
-        _message =
-            'Gagal memuat hotel. Coba cari manual atau periksa koneksi/API Key.';
-      } else {
-        _message = 'Hasil Discovery Hotel';
-      }
-    });
+    await _fetchAndSetHotels(initialDestination);
   }
 
   void _searchHotels() async {
@@ -95,6 +235,10 @@ class _BookingHotelPageState extends State<BookingHotelPage> {
       _hotels = [];
     });
 
+    await _fetchAndSetHotels(destination);
+  }
+
+  Future<void> _fetchAndSetHotels(String destination) async {
     final checkInStr = DateFormat('yyyy-MM-dd').format(_checkInDate);
     final checkOutStr = DateFormat('yyyy-MM-dd').format(_checkOutDate);
 
@@ -148,6 +292,7 @@ class _BookingHotelPageState extends State<BookingHotelPage> {
                     prefixIcon: Icon(Icons.location_city),
                     border: OutlineInputBorder(),
                   ),
+                  onSubmitted: (_) => _searchHotels(),
                 ),
                 const SizedBox(height: 16),
                 SizedBox(
@@ -204,7 +349,11 @@ class _BookingHotelPageState extends State<BookingHotelPage> {
                       padding: const EdgeInsets.all(20.0),
                       child: Text(
                         _message,
-                        style: const TextStyle(color: Colors.grey),
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 16,
+                        ),
                       ),
                     ),
                   )
@@ -229,8 +378,6 @@ class _BookingHotelPageState extends State<BookingHotelPage> {
 
   // Widget untuk tampilan card besar ala Discovery
   Widget _buildDiscoveryCard(BuildContext context, HotelResultModel hotel) {
-    final bool showNetworkImage = hotel.imageUrl.isNotEmpty;
-
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: GestureDetector(
@@ -263,14 +410,8 @@ class _BookingHotelPageState extends State<BookingHotelPage> {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                // Gambar Hotel atau Ikon Default
-                showNetworkImage
-                    ? Image.network(
-                        hotel.imageUrl,
-                        fit: BoxFit.cover,
-                        errorBuilder: (c, e, s) => _buildImageFallback(),
-                      )
-                    : _buildImageFallback(),
+                // Gambar Hotel
+                HotelImageWidget(hotel: hotel),
 
                 // Gradien Overlay untuk teks
                 Container(
@@ -309,6 +450,7 @@ class _BookingHotelPageState extends State<BookingHotelPage> {
                         children: [
                           const Icon(Icons.star, color: Colors.amber, size: 16),
                           const SizedBox(width: 4),
+                          // Rating
                           Text(
                             '${hotel.rating.toStringAsFixed(1)} Rating',
                             style: TextStyle(
@@ -316,11 +458,23 @@ class _BookingHotelPageState extends State<BookingHotelPage> {
                               fontSize: 14,
                             ),
                           ),
+                          const Spacer(),
+                          // Harga
+                          Text(
+                            hotel.priceText,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 5),
+                      // Deskripsi/Alamat
                       Text(
-                        hotel.description ?? hotel.address,
+                        // Menggunakan address karena description sering null/kosong di model lama.
+                        hotel.address,
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.6),
                           fontSize: 12,
@@ -334,26 +488,6 @@ class _BookingHotelPageState extends State<BookingHotelPage> {
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  // Widget fallback gambar internal Flutter
-  Widget _buildImageFallback() {
-    return Container(
-      color: Colors.grey.shade400,
-      child: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.hotel_outlined, color: Colors.white, size: 60),
-            SizedBox(height: 8),
-            Text(
-              "Gambar Tidak Tersedia",
-              style: TextStyle(color: Colors.white, fontSize: 14),
-            ),
-          ],
         ),
       ),
     );

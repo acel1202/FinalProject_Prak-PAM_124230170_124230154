@@ -2,71 +2,66 @@
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:flutter/material.dart'; // Untuk debugPrint/print
-import '../config/api_serpapi_config.dart';
-import '../manager/hive_hotel_manager.dart'; // Mengambil HotelResultModel dari sini
+import 'package:flutter/material.dart'; 
+import '../config/api_serpapi_config.dart'; // SERPAPI_KEY & BASE_URL
+import '../manager/hive_hotel_manager.dart'; // HotelResultModel
 
 class HotelApiService {
-  final String apiKey = SERPAPI_KEY;
-  final String baseUrl = SERPAPI_HOTELS_BASE_URL;
+  final String apiKey = SERPAPI_KEY; 
+  final String baseUrl = SERPAPI_HOTELS_BASE_URL; 
 
   Future<List<HotelResultModel>> fetchHotels({
     required String destination,
-    required String checkInDate,
-    required String checkOutDate,
+    required String checkInDate, // Parameter ini tidak digunakan di URL lama, tapi dipertahankan
+    required String checkOutDate, // Parameter ini tidak digunakan di URL lama, tapi dipertahankan
     String? hotelId,
   }) async {
-    // Logic Query Modification Anda (Menambahkan 'resorts')
-    final String queryBase = destination.toLowerCase().contains("hotel")
-        ? destination
-        : "$destination resorts";
-
-    final String encodedQuery = Uri.encodeQueryComponent(queryBase);
-
-    final Map<String, String> params = {
-      'engine': 'google_hotels',
-      'q': encodedQuery,
-      'check_in_date': checkInDate,
-      'check_out_date': checkOutDate,
-      'apikey': apiKey, // Menggunakan 'apikey' sesuai SerpAPI
-      'gl': 'id', 
-      'hl': 'id',
-    };
-
-    if (hotelId != null) {
-      params['hotel_id'] = hotelId;
-    }
-
-    final url = Uri.parse(baseUrl).replace(queryParameters: params);
+    
+    // Logika URL disalin dari proyek lama (Menggunakan q=query+resorts)
+    final String query = destination + " resorts";
+    final String encodedQuery = Uri.encodeComponent(query);
+    
+    // Kontruksi URL seperti yang ADA DI PROYEK LAMA ANDA, yang bekerja:
+    // '$SERPAPI_HOTELS_BASE_URL&q=$query&gl=id&hl=id&api_key=$SERPAPI_KEY'
+    final url = Uri.parse(
+        '$SERPAPI_HOTELS_BASE_URL' 
+        '&q=$encodedQuery' 
+        '&gl=id&hl=id'
+        '&api_key=$SERPAPI_KEY'
+    );
+    
+    debugPrint('--- MENGGUNAKAN LOGIC PROYEK LAMA: $url ---');
 
     try {
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-
-        // ✨ PERBAIKAN: Cari hasil hotel di lokasi yang tepat dalam respons JSON SerpAPI
-        final List<dynamic> hotelResults = data['hotels'] 
-            ?? data['suggested_hotels'] 
-            ?? data['properties']?['shopping_results']
+        
+        // ✨ KUNCI KRITIS: Cek 'properties' dan 'search_results' (seperti di kode lama)
+        final List properties = data['properties'] 
+            ?? data['search_results']
+            ?? data['hotels']
             ?? [];
-
-        if (hotelResults.isEmpty) {
-          debugPrint('API SUCCESS: Tidak ada hasil hotel ditemukan dalam respons.');
-          return [];
+        
+        if (properties.isEmpty) {
+            debugPrint('API SUKSES (200), TETAPI LIST HASIL KOSONG. Cek kuota API Key atau query.');
+            return [];
         }
 
-        // Mapping menggunakan factory constructor yang sudah diperbaiki
-        return hotelResults
-            .map<HotelResultModel>((json) => HotelResultModel.fromJson(json))
+        debugPrint('SUKSES! Ditemukan ${properties.length} hasil.');
+        
+        // Map ke Model yang baru/disalin
+        return properties
+            .map((hotelJson) => HotelResultModel.fromJson(hotelJson))
             .toList();
-
+        
       } else {
         debugPrint('Gagal memuat hotel. Status code: ${response.statusCode}');
         return [];
       }
     } catch (e) {
-      debugPrint('Terjadi kesalahan koneksi API: $e');
+      debugPrint('Terjadi kesalahan jaringan/koneksi: ${e.toString()}');
       return [];
     }
   }
