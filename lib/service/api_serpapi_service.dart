@@ -2,66 +2,107 @@
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:flutter/material.dart'; 
-import '../config/api_serpapi_config.dart'; // SERPAPI_KEY & BASE_URL
-import '../manager/hive_hotel_manager.dart'; // HotelResultModel
+import '../config/api_serpapi_config.dart';
+import '../manager/hive_hotel_manager.dart';
 
 class HotelApiService {
-  final String apiKey = SERPAPI_KEY; 
-  final String baseUrl = SERPAPI_HOTELS_BASE_URL; 
+  final String apiKey = SERPAPI_KEY;
+  final String baseUrl = SERPAPI_HOTELS_BASE_URL;
 
   Future<List<HotelResultModel>> fetchHotels({
     required String destination,
-    required String checkInDate, // Parameter ini tidak digunakan di URL lama, tapi dipertahankan
-    required String checkOutDate, // Parameter ini tidak digunakan di URL lama, tapi dipertahankan
+    required String checkInDate,
+    required String checkOutDate,
     String? hotelId,
   }) async {
-    
-    // Logika URL disalin dari proyek lama (Menggunakan q=query+resorts)
-    final String query = destination + " resorts";
-    final String encodedQuery = Uri.encodeComponent(query);
-    
-    // Kontruksi URL seperti yang ADA DI PROYEK LAMA ANDA, yang bekerja:
-    // '$SERPAPI_HOTELS_BASE_URL&q=$query&gl=id&hl=id&api_key=$SERPAPI_KEY'
-    final url = Uri.parse(
-        '$SERPAPI_HOTELS_BASE_URL' 
-        '&q=$encodedQuery' 
-        '&gl=id&hl=id'
-        '&api_key=$SERPAPI_KEY'
-    );
-    
-    debugPrint('--- MENGGUNAKAN LOGIC PROYEK LAMA: $url ---');
+    // Query tetap seperti logic kamu sebelumnya
+    final String queryBase = destination.toLowerCase().contains("hotel")
+        ? destination
+        : "$destination resorts";
+
+    final String encodedQuery = Uri.encodeQueryComponent(queryBase);
+
+    final Map<String, String> params = {
+      'engine': 'google_hotels',
+      'q': encodedQuery,
+      'check_in_date': checkInDate,
+      'check_out_date': checkOutDate,
+      'api_key': apiKey,
+    };
+
+    if (hotelId != null) {
+      params['hotel_id'] = hotelId;
+    }
+
+    final url = Uri.parse(baseUrl).replace(queryParameters: params);
 
     try {
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        
-        // ✨ KUNCI KRITIS: Cek 'properties' dan 'search_results' (seperti di kode lama)
-        final List properties = data['properties'] 
-            ?? data['search_results']
-            ?? data['hotels']
-            ?? [];
-        
-        if (properties.isEmpty) {
-            debugPrint('API SUKSES (200), TETAPI LIST HASIL KOSONG. Cek kuota API Key atau query.');
-            return [];
+
+        // === FIX: Fallback semua kemungkinan struktur SerpAPI ===
+        final List<dynamic> hotelResults =
+            data['properties'] ??
+            data['results'] ??
+            data['hotels_results'] ??
+            data['hotels'] ??
+            [];
+
+        if (hotelResults.isEmpty) {
+          print(
+            "⚠ API mengembalikan list kosong. Struktur JSON mungkin berbeda.",
+          );
+          return [];
         }
 
-        debugPrint('SUKSES! Ditemukan ${properties.length} hasil.');
-        
-        // Map ke Model yang baru/disalin
-        return properties
-            .map((hotelJson) => HotelResultModel.fromJson(hotelJson))
-            .toList();
-        
+        return hotelResults.map((json) {
+          // ========= Ambil Gambar =========
+          String imageUrl = '';
+
+          if (json['image'] != null && json['image'] is String) {
+            imageUrl = json['image'];
+          } else if (json['property_photo'] != null) {
+            imageUrl = json['property_photo'];
+          } else if (json['photos'] != null &&
+              json['photos'] is List &&
+              json['photos'].isNotEmpty &&
+              json['photos'][0]['thumbnail'] != null) {
+            imageUrl = json['photos'][0]['thumbnail'];
+          } else if (json['photos'] != null &&
+              json['photos'] is List &&
+              json['photos'].isNotEmpty &&
+              json['photos'][0]['image'] != null) {
+            imageUrl = json['photos'][0]['image'];
+          } else {
+            imageUrl = ''; // fallback biar UI pakai ikon default
+          }
+
+          // ========= Ambil Nama, Rating, Alamat =========
+          final name = json['name'] ?? 'Unknown Hotel';
+          final rating = (json['overall_rating'] ?? json['rating'] ?? 0)
+              .toDouble();
+          final address = json['address'] ?? 'Alamat tidak tersedia';
+
+          // ========= Harga (kosong saja, UI kamu tidak pakai) =========
+          const String priceText = '';
+
+          return HotelResultModel(
+            hotelId: json['hotel_id']?.toString() ?? 'N/A',
+            name: name,
+            address: address,
+            imageUrl: imageUrl,
+            rating: rating,
+            priceText: priceText,
+          );
+        }).toList();
       } else {
-        debugPrint('Gagal memuat hotel. Status code: ${response.statusCode}');
+        print("❌ Gagal load hotel. Status code: ${response.statusCode}");
         return [];
       }
     } catch (e) {
-      debugPrint('Terjadi kesalahan jaringan/koneksi: ${e.toString()}');
+      print("❌ API ERROR: $e");
       return [];
     }
   }
