@@ -227,10 +227,11 @@ class _HomePageState extends State<HomePage> {
                         icon: Icons.hotel,
                         gradient: [primary, const Color(0xFFFFA23D)],
                         onTap: () {
+                          // ❤️ Navigasi ke SearchHotelPage
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const BookingHotelPage(),
+                              builder: (context) => const SearchHotelPage(),
                             ),
                           );
                         },
