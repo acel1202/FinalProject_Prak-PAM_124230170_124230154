@@ -1,21 +1,9 @@
 import 'package:flutter/material.dart';
-import '../dashboard/home_page.dart'; // Menggunakan HomePage yang sudah ada
+import '../dashboard/home_page.dart';
+// Import DiscoveryPage yang baru
+import '../dashboard/discover_page.dart';
 
-// Placeholder untuk halaman Discovery. Sesuaikan import jika Anda sudah punya file aslinya.
-class DiscoveryPage extends StatelessWidget {
-  const DiscoveryPage({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        'Halaman Discovery',
-        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-      ),
-    );
-  }
-}
-
-// Placeholder untuk halaman Profile. Sesuaikan import jika Anda sudah punya file aslinya.
+// Placeholder untuk halaman Profile (Biarkan saja jika belum diimplementasi)
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
   @override
@@ -40,11 +28,10 @@ class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
   // Daftar halaman yang akan ditampilkan.
-  // Pastikan urutannya sesuai dengan item navigasi.
   final List<Widget> _pages = <Widget>[
     const HomePage(),
-    const DiscoveryPage(), 
-    const ProfilePage(),  
+    const DiscoveryPage(), // Menggunakan DiscoveryPage yang baru
+    const ProfilePage(),
   ];
 
   void _onItemTapped(int index) {
@@ -59,9 +46,9 @@ class _MainScreenState extends State<MainScreen> {
     final Color primaryColor = Theme.of(context).colorScheme.primary;
 
     return Scaffold(
-      extendBody: true, // Penting untuk navbar mengambang
+      extendBody: true,
       backgroundColor: Theme.of(context).colorScheme.background,
-      
+
       // Menampilkan halaman yang dipilih
       body: _pages[_selectedIndex],
 
@@ -69,15 +56,15 @@ class _MainScreenState extends State<MainScreen> {
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.only(bottom: 24.0, left: 16.0, right: 16.0),
         child: Container(
-          height: 70, 
+          height: 70,
           decoration: BoxDecoration(
-            color: Colors.white, // Warna background navbar
+            color: Colors.white,
             borderRadius: BorderRadius.circular(36.0),
             boxShadow: [
               BoxShadow(
                 color: primaryColor.withOpacity(0.2),
                 blurRadius: 20,
-                offset: const Offset(0, 10), // Memberi efek mengambang ke bawah
+                offset: const Offset(0, 10),
               ),
             ],
           ),
@@ -114,14 +101,14 @@ class _MainScreenState extends State<MainScreen> {
 
   // Widget pembantu untuk membangun setiap item navigasi
   Widget _buildNavItem({
-    required IconData icon, 
-    required String label, 
+    required IconData icon,
+    required String label,
     required int index,
     required Color primaryColor,
   }) {
     final bool isSelected = index == _selectedIndex;
 
-    // Memberikan efek background di item yang dipilih (seperti gambar referensi)
+    // Memberikan efek background di item yang dipilih
     return GestureDetector(
       onTap: () => _onItemTapped(index),
       child: Container(
@@ -138,7 +125,7 @@ class _MainScreenState extends State<MainScreen> {
               color: isSelected ? Colors.white : Colors.grey.shade600,
               size: 24.0,
             ),
-            if (isSelected) 
+            if (isSelected)
               Padding(
                 padding: const EdgeInsets.only(left: 8.0),
                 child: Text(
