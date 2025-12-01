@@ -5,9 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:finalproject_124230170_124230154/pages/booking/hotel/search_hotel.dart';
 import 'package:finalproject_124230170_124230154/pages/booking/pesawat/search_flight.dart';
 
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
-
+  static const String routeName = '/home'; // Tambahkan routeName untuk navigasi
   @override
   State<HomePage> createState() => _HomePageState();
 }

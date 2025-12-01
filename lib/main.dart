@@ -1,16 +1,36 @@
-// lib/main.dart (KODE LENGKAP DIPERBAIKI)
+// lib/main.dart
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // Untuk SystemChrome
-import 'pages/screen/main_screen.dart'; // Atau entry point aplikasi Anda
+import 'package:flutter/services.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-void main() {
+// ==== IMPORT FILE PROJECTMU ====
+// Sesuaikan path jika beda
+import 'db/user_model.dart';
+import 'pages/auth/splash_page.dart';
+import 'pages/auth/login_page.dart';
+import 'pages/auth/register_Page.dart';
+import 'pages/profile/profile_page.dart';
+import 'pages/dashboard/home_page.dart'; // <- kita pakai HomePage sebagai main setelah login
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Inisialisasi Hive
+  await Hive.initFlutter();
+
+  // Register adapter user (typeId harus sama dengan di user_model.dart)
+  if (!Hive.isAdapterRegistered(1)) {
+    Hive.registerAdapter(AppUserAdapter());
+  }
+  // Kalau kamu punya adapter Hive lain (pesawat/hotel), register juga di sini.
+
   // Set orientasi aplikasi hanya potrait
-  SystemChrome.setPreferredOrientations([
+  await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+
   runApp(const MyApp());
 }
 
@@ -23,38 +43,40 @@ class MyApp extends StatelessWidget {
       title: 'Travel App',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        // ================== TEMA WARNA BARU ==================
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(
-            0xFFFFB45F,
-          ), // Warna utama dari Material Theme Builder
-          primary: const Color(0xFFFFB45F), // Primary color
-          onPrimary: const Color(0xFFFFFFFF), // Warna teks di atas primary
-          secondary: const Color(
-            0xFF755940,
-          ), // Secondary color (contoh dari generator)
+          seedColor: const Color(0xFFFFB45F),
+          primary: const Color(0xFFFFB45F),
+          onPrimary: const Color(0xFFFFFFFF),
+          secondary: const Color(0xFF755940),
           onSecondary: const Color(0xFFFFFFFF),
-          tertiary: const Color(
-            0xFF6B613A,
-          ), // Tertiary color (contoh dari generator)
+          tertiary: const Color(0xFF6B613A),
           onTertiary: const Color(0xFFFFFFFF),
-          error: const Color(0xFFBA1A1A), // Error color
+          error: const Color(0xFFBA1A1A),
           onError: const Color(0xFFFFFFFF),
-          background: const Color(0xFFFFF8F5), // Background color
+          background: const Color(0xFFFFF8F5),
           onBackground: const Color(0xFF201A17),
-          surface: const Color(0xFFFFF8F5), // Surface color
+          surface: const Color(0xFFFFF8F5),
           onSurface: const Color(0xFF201A17),
         ),
         useMaterial3: true,
-        fontFamily: 'Inter', // Sesuaikan jika Anda mengimpor font Inter
-        // PERBAIKAN #1: Tambahkan const pada AppBarTheme
+        fontFamily: 'Inter',
         appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFFFFB45F), // Warna AppBar mengikuti primary
-          foregroundColor: Colors.white, // Warna teks di AppBar
+          backgroundColor: Color(0xFFFFB45F),
+          foregroundColor: Colors.white,
           elevation: 0,
         ),
       ),
-      home: const MainScreen(),
+
+      // ==== ROUTING APLIKASI ====
+      // Mulai dari SplashPage untuk cek SharedPreferences
+      initialRoute: SplashPage.routeName,
+      routes: {
+        SplashPage.routeName: (_) => const SplashPage(),
+        LoginPage.routeName: (_) => const LoginPage(),
+        RegisterPage.routeName: (_) => const RegisterPage(),
+        HomePage.routeName: (_) => const HomePage(), // <- arahkan ke HomePage
+        ProfilePage.routeName: (_) => const ProfilePage(), // <- profil + logout
+      },
     );
   }
 }
