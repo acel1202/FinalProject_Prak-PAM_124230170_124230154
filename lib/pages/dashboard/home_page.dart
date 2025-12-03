@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:finalproject_124230170_124230154/pages/booking/hotel/search_hotel.dart';
 import 'package:finalproject_124230170_124230154/pages/booking/pesawat/search_flight.dart';
 
-
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
   static const String routeName = '/home'; // Tambahkan routeName untuk navigasi
@@ -15,6 +14,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final PageController _pageController = PageController();
+  Timer? _sliderTimer;
   int _currentPage = 0;
 
   final List<String> sliderImages = [
@@ -40,16 +40,23 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
 
-    Timer.periodic(const Duration(seconds: 4), (timer) {
-      if (_pageController.positions.isNotEmpty) {
-        _currentPage = (_currentPage + 1) % sliderImages.length;
-        _pageController.animateToPage(
-          _currentPage,
-          duration: const Duration(milliseconds: 700),
-          curve: Curves.easeInOut,
-        );
-      }
+    // safe timer: store reference so we can cancel in dispose
+    _sliderTimer = Timer.periodic(const Duration(seconds: 4), (timer) {
+      if (!_pageController.hasClients) return;
+      _currentPage = (_currentPage + 1) % sliderImages.length;
+      _pageController.animateToPage(
+        _currentPage,
+        duration: const Duration(milliseconds: 700),
+        curve: Curves.easeInOut,
+      );
     });
+  }
+
+  @override
+  void dispose() {
+    _sliderTimer?.cancel();
+    _pageController.dispose();
+    super.dispose();
   }
 
   @override
@@ -100,6 +107,8 @@ class _HomePageState extends State<HomePage> {
                             Image.network(
                               sliderImages[index],
                               fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) =>
+                                  Container(color: Colors.grey.shade300),
                             ),
                             Container(
                               height: 150,
@@ -152,11 +161,13 @@ class _HomePageState extends State<HomePage> {
                       child: ElevatedButton(
                         onPressed: () {
                           final next = (_currentPage + 1) % sliderImages.length;
-                          _pageController.animateToPage(
-                            next,
-                            duration: const Duration(milliseconds: 700),
-                            curve: Curves.easeInOut,
-                          );
+                          if (_pageController.hasClients) {
+                            _pageController.animateToPage(
+                              next,
+                              duration: const Duration(milliseconds: 700),
+                              curve: Curves.easeInOut,
+                            );
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: surface.withOpacity(0.85),
@@ -248,11 +259,11 @@ class _HomePageState extends State<HomePage> {
                           const Color(0xFF4A9BFF),
                         ],
                         onTap: () {
-                          // ❤️ Navigasi ke SearchFlightPage
+                          // ❤️ Navigasi ke SearchFlightScreen (class name as in your file)
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const SearchFlightPage(),
+                              builder: (context) => const SearchFlightScreen(),
                             ),
                           );
                         },
