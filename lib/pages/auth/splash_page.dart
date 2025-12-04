@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-
-import '../dashboard/home_page.dart';
 import '../utils/shared_prefs_helper.dart';
-import 'login_page.dart';
+import '../auth/login_page.dart';
 
 class SplashPage extends StatefulWidget {
   static const String routeName = '/';
@@ -21,7 +19,6 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   Future<void> _checkLogin() async {
-    // delay dikit kalau mau tampil logo
     await Future.delayed(const Duration(seconds: 2));
 
     final isLoggedIn = await SharedPrefsHelper.getIsLoggedIn();
@@ -29,7 +26,7 @@ class _SplashPageState extends State<SplashPage> {
     if (!mounted) return;
 
     if (isLoggedIn) {
-      Navigator.pushReplacementNamed(context, HomePage.routeName);
+      Navigator.pushReplacementNamed(context, "/main");
     } else {
       Navigator.pushReplacementNamed(context, LoginPage.routeName);
     }
@@ -38,9 +35,8 @@ class _SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      body: Center(
-        child: CircularProgressIndicator(),
-      ),
+      backgroundColor: Color(0xfffef7f3),
+      body: Center(child: CircularProgressIndicator(color: Color(0xffFFB45F))),
     );
   }
 }

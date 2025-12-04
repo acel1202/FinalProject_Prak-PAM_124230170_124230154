@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
+// lib/pages/auth/login_page.dart
 
+import 'package:flutter/material.dart';
 import '../../manager/hive_user_manager.dart';
-import '../Utils/shared_prefs_helper.dart';
-import '../dashboard/home_page.dart';
-import 'register_Page.dart';
+import '../utils/shared_prefs_helper.dart';
+import 'register_page.dart';
 
 class LoginPage extends StatefulWidget {
   static const String routeName = '/login';
@@ -19,6 +19,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
 
   bool _isLoading = false;
+  bool _passwordVisible = false;
   String? _errorText;
 
   Future<void> _login() async {
@@ -48,7 +49,6 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    // Simpan status login & info user
     await SharedPrefsHelper.setLoggedIn(true);
     await SharedPrefsHelper.setUserInfo(
       username: user.username,
@@ -57,59 +57,141 @@ class _LoginPageState extends State<LoginPage> {
 
     if (!mounted) return;
 
-    Navigator.pushReplacementNamed(context, HomePage.routeName);
-  }
-
-  @override
-  void dispose() {
-    _usernameController.dispose();
-    _passwordController.dispose();
-    super.dispose();
+    Navigator.pushReplacementNamed(context, "/main");
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _usernameController,
-              decoration: const InputDecoration(labelText: 'Username'),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _passwordController,
-              obscureText: true,
-              decoration: const InputDecoration(labelText: 'Password'),
-            ),
-            const SizedBox(height: 12),
-            if (_errorText != null)
-              Text(_errorText!, style: const TextStyle(color: Colors.red)),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _isLoading ? null : _login,
-                child: _isLoading
-                    ? const SizedBox(
-                        height: 18,
-                        width: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Text('Login'),
+      backgroundColor: const Color(0xffFFF4E9),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(28),
+          child: Column(
+            children: [
+              const Icon(
+                Icons.travel_explore,
+                size: 86,
+                color: Color(0xffFFB45F),
               ),
-            ),
-            const SizedBox(height: 8),
-            TextButton(
-              onPressed: () {
-                Navigator.pushNamed(context, RegisterPage.routeName);
-              },
-              child: const Text('Belum punya akun? Register'),
-            ),
-          ],
+              const SizedBox(height: 20),
+
+              const Text(
+                "Welcome Back!",
+                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+              ),
+
+              const SizedBox(height: 30),
+
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 24,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(22),
+                  boxShadow: [
+                    BoxShadow(
+                      blurRadius: 20,
+                      color: Colors.black.withOpacity(0.06),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    TextField(
+                      controller: _usernameController,
+                      decoration: InputDecoration(
+                        labelText: "Username",
+                        prefixIcon: const Icon(Icons.person),
+                        filled: true,
+                        fillColor: Colors.grey.shade100,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+
+                    TextField(
+                      controller: _passwordController,
+                      obscureText: !_passwordVisible,
+                      decoration: InputDecoration(
+                        labelText: "Password",
+                        prefixIcon: const Icon(Icons.lock),
+                        filled: true,
+                        fillColor: Colors.grey.shade100,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _passwordVisible
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                          ),
+                          onPressed: () => setState(
+                            () => _passwordVisible = !_passwordVisible,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 18),
+
+                    if (_errorText != null)
+                      Text(
+                        _errorText!,
+                        style: const TextStyle(color: Colors.red, fontSize: 14),
+                      ),
+
+                    const SizedBox(height: 20),
+
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: _isLoading ? null : _login,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xffFFB45F),
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        child: _isLoading
+                            ? const CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              )
+                            : const Text(
+                                "Login",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    GestureDetector(
+                      onTap: () =>
+                          Navigator.pushNamed(context, RegisterPage.routeName),
+                      child: const Text(
+                        "Belum punya akun? Daftar",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xffFF8A3D),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

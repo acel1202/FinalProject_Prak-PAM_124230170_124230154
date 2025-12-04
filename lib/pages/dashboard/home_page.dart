@@ -3,11 +3,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:finalproject_124230170_124230154/pages/booking/hotel/search_hotel.dart';
-import 'package:finalproject_124230170_124230154/pages/booking/pesawat/search_flight.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
-  static const String routeName = '/home'; // Tambahkan routeName untuk navigasi
+  static const String routeName = '/home';
+
   @override
   State<HomePage> createState() => _HomePageState();
 }
@@ -40,7 +40,6 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
 
-    // safe timer: store reference so we can cancel in dispose
     _sliderTimer = Timer.periodic(const Duration(seconds: 4), (timer) {
       if (!_pageController.hasClients) return;
       _currentPage = (_currentPage + 1) % sliderImages.length;
@@ -239,7 +238,6 @@ class _HomePageState extends State<HomePage> {
                         icon: Icons.hotel,
                         gradient: [primary, const Color(0xFFFFA23D)],
                         onTap: () {
-                          // ❤️ Navigasi ke SearchHotelPage
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -249,29 +247,11 @@ class _HomePageState extends State<HomePage> {
                         },
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: layananCard(
-                        title: "Booking Pesawat",
-                        icon: Icons.flight_takeoff,
-                        gradient: [
-                          const Color(0xFF7CB7FF),
-                          const Color(0xFF4A9BFF),
-                        ],
-                        onTap: () {
-                          // ❤️ Navigasi ke SearchFlightScreen (class name as in your file)
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const SearchFlightScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
                   ],
                 ),
+
                 const SizedBox(height: 8),
+
                 Row(
                   children: [
                     Expanded(
@@ -279,15 +259,6 @@ class _HomePageState extends State<HomePage> {
                         title: "Riwayat Hotel",
                         icon: Icons.history,
                         gradient: [secondary, const Color(0xFF5E442F)],
-                        onTap: () {},
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: layananCard(
-                        title: "Riwayat Tiket",
-                        icon: Icons.receipt_long,
-                        gradient: [tertiary, const Color(0xFF4A4F2B)],
                         onTap: () {},
                       ),
                     ),

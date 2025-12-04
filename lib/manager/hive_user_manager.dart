@@ -11,19 +11,16 @@ class HiveUserManager {
     return await Hive.openBox<AppUser>(usersBoxName);
   }
 
-  /// Simpan user baru, key = username
   static Future<void> addUser(AppUser user) async {
     final box = await _openBox();
     await box.put(user.username, user);
   }
 
-  /// Ambil user berdasarkan username
   static Future<AppUser?> getUserByUsername(String username) async {
     final box = await _openBox();
     return box.get(username);
   }
 
-  /// Cek apakah username sudah digunakan
   static Future<bool> usernameExists(String username) async {
     final box = await _openBox();
     return box.containsKey(username);

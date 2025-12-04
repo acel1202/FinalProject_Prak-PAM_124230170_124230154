@@ -3,12 +3,10 @@
 import 'package:flutter/material.dart';
 import '../dashboard/home_page.dart';
 import '../dashboard/discover_page.dart';
-import '../profile/profile_page.dart'; // ✅ pakai ProfilePage yang asli
+import '../profile/profile_page.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
-
-  // optional, kalau mau dipakai untuk routes juga
   static const routeName = '/main';
 
   @override
@@ -23,15 +21,12 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
-    // di sini kita isi list halaman yang akan ditampilkan di bottom nav
+
+    // ✔ ProfilePage tidak membutuhkan parameter lagi
     _pages = <Widget>[
       const HomePage(),
       const DiscoveryPage(),
-      const ProfilePage(
-        // TODO: nanti ganti dengan data dari Hive / SharedPrefs
-        name: 'Ghielbrant',
-        email: 'ghielbrant@example.com',
-      ),
+      const ProfilePage(), // ← sudah benar
     ];
   }
 
@@ -49,10 +44,10 @@ class _MainScreenState extends State<MainScreen> {
       extendBody: true,
       backgroundColor: Theme.of(context).colorScheme.background,
 
-      // Halaman yang sedang dipilih
+      // Halaman yang sedang aktif
       body: _pages[_selectedIndex],
 
-      // Floating Bottom Navigation Bar
+      // Floating Bottom Navigation Bar (tidak diubah sama sekali)
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.only(bottom: 24.0, left: 16.0, right: 16.0),
         child: Container(
@@ -96,7 +91,6 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  // Widget pembantu item nav
   Widget _buildNavItem({
     required IconData icon,
     required String label,
