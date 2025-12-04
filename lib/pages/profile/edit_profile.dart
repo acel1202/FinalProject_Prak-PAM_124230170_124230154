@@ -1,6 +1,9 @@
 // lib/pages/profile/edit_profile.dart
 
 import 'package:flutter/material.dart';
+import '../../manager/hive_user_manager.dart';
+import '../../db/user_model.dart';
+import '../utils/shared_prefs_helper.dart';
 
 class EditProfilePage extends StatefulWidget {
   final String initialName;
@@ -24,7 +27,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   void initState() {
     super.initState();
-    // isi awal textfield diambil dari nilai yang dikirim ProfilePage
     _nameC = TextEditingController(text: widget.initialName);
     _emailC = TextEditingController(text: widget.initialEmail);
   }
@@ -36,25 +38,40 @@ class _EditProfilePageState extends State<EditProfilePage> {
     super.dispose();
   }
 
-  void _save() {
+  Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
 
-    // kalau kamu mau simpan ke SharedPreferences / API,
-    // taruh kodenya di sini.
+    final newName = _nameC.text.trim();
+    final newEmail = _emailC.text.trim();
 
-    // kirim balik data ke halaman sebelumnya (ProfilePage)
+    final oldUser = await HiveUserManager.getUserByUsername(widget.initialName);
+
+    if (oldUser != null) {
+      final updatedUser = AppUser(
+        username: newName,
+        email: newEmail,
+        password: oldUser.password,
+      );
+
+      if (widget.initialName != newName) {
+        await HiveUserManager.deleteUser(widget.initialName);
+      }
+
+      await HiveUserManager.addUser(updatedUser);
+
+      await SharedPrefsHelper.setUserInfo(username: newName, email: newEmail);
+    }
+
     Navigator.pop<Map<String, String>>(context, {
-      'name': _nameC.text.trim(),
-      'email': _emailC.text.trim(),
+      'name': newName,
+      'email': newEmail,
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit Profile'),
-      ),
+      appBar: AppBar(title: const Text('Edit Profile')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -93,12 +110,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: _save,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
                   child: const Text('Simpan'),
                 ),
               ),

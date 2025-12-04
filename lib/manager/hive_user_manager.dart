@@ -8,7 +8,7 @@ class HiveUserManager {
     if (Hive.isBoxOpen(usersBoxName)) {
       return Hive.box<AppUser>(usersBoxName);
     }
-    return await Hive.openBox<AppUser>(usersBoxName);
+    return Hive.openBox<AppUser>(usersBoxName);
   }
 
   static Future<void> addUser(AppUser user) async {
@@ -24,5 +24,12 @@ class HiveUserManager {
   static Future<bool> usernameExists(String username) async {
     final box = await _openBox();
     return box.containsKey(username);
+  }
+
+  static Future<void> deleteUser(String username) async {
+    final box = await _openBox();
+    if (box.containsKey(username)) {
+      await box.delete(username);
+    }
   }
 }
