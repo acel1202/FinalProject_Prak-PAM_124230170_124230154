@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:finalproject_124230170_124230154/pages/booking/hotel/search_hotel.dart';
+import '../riwayat/riwayat_hotel.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -259,7 +260,14 @@ class _HomePageState extends State<HomePage> {
                         title: "Riwayat Hotel",
                         icon: Icons.history,
                         gradient: [secondary, const Color(0xFF5E442F)],
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const RiwayatHotelPage(),
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ],
