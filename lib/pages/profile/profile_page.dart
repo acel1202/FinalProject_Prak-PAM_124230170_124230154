@@ -1,4 +1,9 @@
+// lib/pages/profile/profile_page.dart
+
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+
+import '../../db/user_model.dart';
 import '../auth/login_page.dart';
 import '../utils/shared_prefs_helper.dart';
 import 'about_me_page.dart';
@@ -32,7 +37,7 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
-  // Fungsi Logout
+  // Fungsi logout
   Future<void> _logout() async {
     final confirm = await showDialog<bool>(
       context: context,
@@ -65,7 +70,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // Navigasi ke Edit Profile
+  // ----- EDIT PROFIL -----
   Future<void> _goToEditProfile() async {
     final result = await Navigator.push<Map<String, String>?>(
       context,
@@ -75,12 +80,56 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
     );
 
+    // kalau user menekan "Simpan"
     if (result != null && mounted) {
+      final newName = result['name']?.trim() ?? _name;
+      final newEmail = result['email']?.trim() ?? _email;
+
+      // 1. update data user di Hive (untuk login pakai username baru)
+      await _updateUserInHive(
+        oldUsername: _name,
+        newUsername: newName,
+        newEmail: newEmail,
+      );
+
+      // 2. update SharedPreferences (untuk profil yang sedang login)
+      await SharedPrefsHelper.setUsername(newName);
+      await SharedPrefsHelper.setEmail(newEmail);
+
+      // 3. update tampilan di layar profil
       setState(() {
-        _name = result['name'] ?? _name;
-        _email = result['email'] ?? _email;
+        _name = newName;
+        _email = newEmail;
       });
     }
+  }
+
+  // Update user di Hive berdasarkan username lama
+  Future<void> _updateUserInHive({
+    required String oldUsername,
+    required String newUsername,
+    required String newEmail,
+  }) async {
+    // TODO: ganti 'users_box' dengan NAMA BOX yang kamu pakai di register/login
+    final box = await Hive.openBox<AppUser>('users_box');
+
+    final users = box.values.toList();
+    final index = users.indexWhere((user) => user.username == oldUsername);
+
+    if (index == -1) {
+      // kalau user tidak ketemu, tidak perlu apa-apa
+      return;
+    }
+
+    final oldUser = users[index];
+
+    final updatedUser = AppUser(
+      username: newUsername,
+      email: newEmail,
+      password: oldUser.password, // password tetap
+    );
+
+    await box.putAt(index, updatedUser);
   }
 
   @override
@@ -90,12 +139,11 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       appBar: AppBar(title: const Text("Profil")),
       body: SingleChildScrollView(
-        // ← supaya scroll dan logout selalu terlihat
         child: Column(
           children: [
             const SizedBox(height: 24),
 
-            // Foto Profil (Inisial)
+            // Avatar inisial
             CircleAvatar(
               radius: 50,
               backgroundColor: Colors.blue,
@@ -114,16 +162,22 @@ class _ProfilePageState extends State<ProfilePage> {
             // Nama
             Text(
               _name,
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
             ),
 
             // Email
-            Text(_email, style: const TextStyle(color: Colors.grey)),
+            Text(
+              _email,
+              style: const TextStyle(color: Colors.grey),
+            ),
 
             const SizedBox(height: 16),
             const Divider(),
 
-            // MENU LIST
+            // ===== MENU =====
             ListTile(
               leading: const Icon(Icons.edit),
               title: const Text("Edit Profil"),
@@ -139,7 +193,9 @@ class _ProfilePageState extends State<ProfilePage> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const AboutMePage()),
+                  MaterialPageRoute(
+                    builder: (_) => const AboutMePage(),
+                  ),
                 );
               },
             ),
@@ -147,7 +203,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
             const SizedBox(height: 24),
 
-            // TOMBOL LOGOUT
+            // ===== LOGOUT =====
             Padding(
               padding: const EdgeInsets.all(16),
               child: SizedBox(

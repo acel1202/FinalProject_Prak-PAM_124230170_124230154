@@ -80,7 +80,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
     if (!mounted) return;
 
-    Navigator.pushReplacementNamed(context, "/main");
+    Navigator.pushReplacementNamed(context, LoginPage.routeName);
   }
 
   @override
