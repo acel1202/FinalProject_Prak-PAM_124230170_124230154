@@ -10,8 +10,8 @@ import 'db/user_model.dart';
 import 'pages/auth/splash_page.dart';
 import 'pages/auth/login_page.dart';
 import 'pages/auth/register_Page.dart';
-import 'pages/profile/profile_page.dart';
-import 'pages/dashboard/home_page.dart'; // <- kita pakai HomePage sebagai main setelah login
+import 'pages/dashboard/home_page.dart'; // dipakai hanya untuk routeName
+import 'pages/screen/main_screen.dart'; // ✅ berisi bottom nav Home/Discovery/Profile
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -68,14 +68,17 @@ class MyApp extends StatelessWidget {
       ),
 
       // ==== ROUTING APLIKASI ====
-      // Mulai dari SplashPage untuk cek SharedPreferences
+      // Mulai dari SplashPage untuk cek Hive / status login
       initialRoute: SplashPage.routeName,
       routes: {
         SplashPage.routeName: (_) => const SplashPage(),
         LoginPage.routeName: (_) => const LoginPage(),
         RegisterPage.routeName: (_) => const RegisterPage(),
-        HomePage.routeName: (_) => const HomePage(), // <- arahkan ke HomePage
-        ProfilePage.routeName: (_) => const ProfilePage(), // <- profil + logout
+
+        // ⬇️ PENTING:
+        // Route dengan nama HomePage.routeName sekarang mengarah ke MainScreen,
+        // bukan langsung ke HomePage lagi, supaya bottom nav muncul.
+        HomePage.routeName: (_) => const MainScreen(),
       },
     );
   }
