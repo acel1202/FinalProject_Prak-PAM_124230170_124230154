@@ -3,11 +3,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:finalproject_124230170_124230154/pages/booking/hotel/search_hotel.dart';
+import 'package:finalproject_124230170_124230154/pages/booking/pesawat/search_flight.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
-  static const String routeName = '/home';
-
+  static const String routeName = '/home'; // Tambahkan routeName untuk navigasi
   @override
   State<HomePage> createState() => _HomePageState();
 }
@@ -39,6 +39,8 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+
+    // safe timer: store reference so we can cancel in dispose
     _sliderTimer = Timer.periodic(const Duration(seconds: 4), (timer) {
       if (!_pageController.hasClients) return;
       _currentPage = (_currentPage + 1) % sliderImages.length;
@@ -121,13 +123,13 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               ),
                             ),
-                            const Positioned(
+                            Positioned(
                               left: 20,
                               bottom: 22,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
+                                  const Text(
                                     "Pyramid",
                                     style: TextStyle(
                                       color: Colors.white,
@@ -136,11 +138,11 @@ class _HomePageState extends State<HomePage> {
                                       fontFamily: "Inter",
                                     ),
                                   ),
-                                  SizedBox(height: 6),
+                                  const SizedBox(height: 6),
                                   Text(
                                     "Egyptian Pyramids",
                                     style: TextStyle(
-                                      color: Colors.white70,
+                                      color: Colors.white.withOpacity(0.8),
                                       fontSize: 14,
                                       fontFamily: "Inter",
                                     ),
@@ -237,6 +239,7 @@ class _HomePageState extends State<HomePage> {
                         icon: Icons.hotel,
                         gradient: [primary, const Color(0xFFFFA23D)],
                         onTap: () {
+                          // ❤️ Navigasi ke SearchHotelPage
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -246,12 +249,29 @@ class _HomePageState extends State<HomePage> {
                         },
                       ),
                     ),
-                    // Hapus opsi pesawat → tidak ada Expanded kedua
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: layananCard(
+                        title: "Booking Pesawat",
+                        icon: Icons.flight_takeoff,
+                        gradient: [
+                          const Color(0xFF7CB7FF),
+                          const Color(0xFF4A9BFF),
+                        ],
+                        onTap: () {
+                          // ❤️ Navigasi ke SearchFlightScreen (class name as in your file)
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SearchFlightScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                   ],
                 ),
-
                 const SizedBox(height: 8),
-
                 Row(
                   children: [
                     Expanded(
@@ -262,7 +282,15 @@ class _HomePageState extends State<HomePage> {
                         onTap: () {},
                       ),
                     ),
-                    // Hapus Riwayat Tiket → tidak ada kartu kedua
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: layananCard(
+                        title: "Riwayat Tiket",
+                        icon: Icons.receipt_long,
+                        gradient: [tertiary, const Color(0xFF4A4F2B)],
+                        onTap: () {},
+                      ),
+                    ),
                   ],
                 ),
               ],
