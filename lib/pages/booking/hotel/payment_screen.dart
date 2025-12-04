@@ -1,6 +1,7 @@
 // lib/pages/booking/hotel/payment_screen.dart
 
 import 'package:flutter/material.dart';
+import '../../utils/notification_service.dart';
 
 class PaymentScreen extends StatefulWidget {
   final String hotelName;
@@ -29,8 +30,15 @@ class _PaymentScreenState extends State<PaymentScreen> {
     // Simulasi proses pembayaran (2s)
     await Future.delayed(const Duration(seconds: 2));
 
-    // panggil callback
+    // 1. panggil callback (misalnya simpan riwayat + pindah ke success page)
     await widget.onPaymentSuccess();
+
+    // 2. tampilkan notifikasi lokal
+    await NotificationService.showBookingSuccess(
+      hotelName: widget.hotelName,
+      totalPrice: widget.totalPrice,
+      currency: widget.currency,
+    );
 
     if (!mounted) return;
     setState(() => loading = false);

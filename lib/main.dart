@@ -12,6 +12,8 @@ import 'pages/auth/register_page.dart';
 // DASHBOARD
 import 'pages/dashboard/home_page.dart';
 import 'pages/screen/main_screen.dart';
+// NOTIFICATION SERVICE
+import 'pages/utils/notification_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,6 +28,8 @@ Future<void> main() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+
+  await NotificationService.init();
 
   runApp(const MyApp());
 }
