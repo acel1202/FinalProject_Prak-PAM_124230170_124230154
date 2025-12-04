@@ -27,13 +27,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
   void _pay() async {
     setState(() => loading = true);
 
-    // Simulasi proses pembayaran (2s)
+    // Simulasi proses pembayaran (2 detik)
     await Future.delayed(const Duration(seconds: 2));
 
-    // 1. panggil callback (misalnya simpan riwayat + pindah ke success page)
+    // Callback sukses
     await widget.onPaymentSuccess();
 
-    // 2. tampilkan notifikasi lokal
+    // Notifikasi
     await NotificationService.showBookingSuccess(
       hotelName: widget.hotelName,
       totalPrice: widget.totalPrice,

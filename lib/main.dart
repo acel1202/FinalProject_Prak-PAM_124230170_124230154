@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 
 import 'db/user_model.dart';
 
@@ -12,6 +13,7 @@ import 'pages/auth/register_page.dart';
 // DASHBOARD
 import 'pages/dashboard/home_page.dart';
 import 'pages/screen/main_screen.dart';
+
 // NOTIFICATION SERVICE
 import 'pages/utils/notification_service.dart';
 
@@ -29,6 +31,7 @@ Future<void> main() async {
     DeviceOrientation.portraitDown,
   ]);
 
+  // INIT NOTIFICATION
   await NotificationService.init();
 
   runApp(const MyApp());
@@ -47,19 +50,12 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         fontFamily: 'Inter',
       ),
-
-      // MULAI DARI SPLASH
       initialRoute: SplashPage.routeName,
-
       routes: {
         SplashPage.routeName: (_) => const SplashPage(),
         LoginPage.routeName: (_) => const LoginPage(),
         RegisterPage.routeName: (_) => const RegisterPage(),
-
-        // Sekarang HomePage benar-benar HomePage lagi
         HomePage.routeName: (_) => const HomePage(),
-
-        // ROUTE MENUJU MAIN SCREEN SETELAH LOGIN
         "/main": (_) => const MainScreen(),
       },
     );

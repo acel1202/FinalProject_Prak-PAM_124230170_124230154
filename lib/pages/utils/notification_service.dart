@@ -1,70 +1,42 @@
-// lib/pages/utils/notification_service.dart
-
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter/material.dart'; // <-- tambahkan ini
+import 'package:awesome_notifications/awesome_notifications.dart';
 
 class NotificationService {
-  static final FlutterLocalNotificationsPlugin _plugin =
-      FlutterLocalNotificationsPlugin();
-
- 
   static Future<void> init() async {
-    const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
-    const iosInit = DarwinInitializationSettings();
+    await AwesomeNotifications().initialize(null, [
+      NotificationChannel(
+        channelKey: 'booking_channel',
+        channelName: 'Booking',
+        channelDescription: 'Notifikasi untuk status booking hotel',
+        importance: NotificationImportance.Max,
+        defaultColor: const Color(0xFFFFB45F),
+        ledColor: const Color(0xFFFFB45F),
+      ),
+    ], debug: true);
 
-    const settings = InitializationSettings(
-      android: androidInit,
-      iOS: iosInit,
-    );
-
-    await _plugin.initialize(settings);
-
-    
-    await _plugin
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
-        ?.requestNotificationsPermission();
-
-    await _plugin
-        .resolvePlatformSpecificImplementation<
-            IOSFlutterLocalNotificationsPlugin>()
-        ?.requestPermissions(
-          alert: true,
-          badge: true,
-          sound: true,
-        );
+    await AwesomeNotifications().isNotificationAllowed().then((allowed) {
+      if (!allowed) {
+        AwesomeNotifications().requestPermissionToSendNotifications();
+      }
+    });
   }
 
-  // NOTIFIKASI SUKSES BOOKING
   static Future<void> showBookingSuccess({
     required String hotelName,
     required double totalPrice,
     required String currency,
   }) async {
-    const AndroidNotificationDetails androidDetails =
-        AndroidNotificationDetails(
-      'booking_channel', 
-      'Booking',        
-      channelDescription: 'Notifikasi untuk status booking hotel',
-      importance: Importance.max,
-      priority: Priority.high,
-    );
-
-    const DarwinNotificationDetails iosDetails = DarwinNotificationDetails();
-
-    const NotificationDetails notifDetails = NotificationDetails(
-      android: androidDetails,
-      iOS: iosDetails,
-    );
-
     final title = 'Booking Berhasil';
     final body =
         'Hotel $hotelName berhasil dipesan. Total: $currency ${totalPrice.toStringAsFixed(0)}';
 
-    await _plugin.show(
-      0,      // id notifikasi
-      title,  // judul
-      body,   // isi
-      notifDetails,
+    await AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+        channelKey: 'booking_channel',
+        title: title,
+        body: body,
+      ),
     );
   }
 }
